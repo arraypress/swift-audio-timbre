@@ -32,7 +32,7 @@ final class TimbreTests: XCTestCase {
         XCTAssertEqual(timbre.pitch?.name, "A4",
                        "the fundamental, not the centroid it sits below")
 
-        XCTAssertLessThan(timbre.attackMs, 20)
+        XCTAssertLessThan(timbre.attackMs ?? 999, 20)
         XCTAssertEqual(timbre.decayMs ?? 0, TestSignals.decayMs(tau: 0.15), accuracy: 60)
     }
 
@@ -64,6 +64,18 @@ final class TimbreTests: XCTestCase {
         XCTAssertEqual(timbre.duration, 0.04, accuracy: 0.005)
         XCTAssertGreaterThan(timbre.spectralCentroidHz, 0)
         XCTAssertGreaterThan(timbre.peakDbfs, -20)
+    }
+
+    func testALoopReportsItsPeakWithoutCallingItAnAttack() throws {
+        // The finding that moved this: a real 5.65 s pad loop measured
+        // "attack 3040 ms", describing one bar being marginally louder.
+        let hit = TestSignals.decayingSine(hz: 440, tau: 0.05, onset: 0.05, seconds: 0.5)
+        let timbre = try analyze([hit + hit + hit + hit])
+        XCTAssertNil(timbre.attackMs)
+        XCTAssertEqual(timbre.attackRejection, .reArticulates)
+        XCTAssertGreaterThan(timbre.timeToPeakMs, 0)
+        XCTAssertTrue(timbre.summary.contains("not an attack"))
+        XCTAssertTrue(timbre.summary.contains("reArticulates"))
     }
 
     func testEveryWordShipsBesideItsNumber() throws {

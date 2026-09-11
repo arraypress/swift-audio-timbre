@@ -14,7 +14,8 @@ let timbre = try TimbreAnalyzer.analyze(fileAt: url)
 timbre.brightness            // .warm
 timbre.spectralCentroidHz    // 1894.2
 timbre.pitch?.name           // "C5"
-timbre.attackMs              // 8.0
+timbre.timeToPeakMs          // 8.0  — always measured
+timbre.attackMs              // 8.0  — nil when that time is not an onset
 timbre.decayMs               // 1180.0
 print(timbre.summary)
 ```
@@ -59,6 +60,25 @@ Where a word cannot be justified, there isn't one: `StereoImage` reports correla
 Side/Mid as numbers with no adjective attached, because no boundary set for stereo width
 was available to cite and inventing one would dress a guess as a measurement.
 
+## A time-to-peak is not always an attack
+
+Time to the loudest point is the attack on a one-shot and wherever the
+arrangement peaked on anything longer. A real 5.65-second pad loop measured
+**"attack 3040 ms"** — describing one bar being marginally louder than the one
+before it.
+
+So the figure is always reported as `timeToPeakMs`, and the WORD is gated the
+same way a pitch estimate is — refused with a reason when the shape does not
+support it:
+
+```
+Kick - 009.wav   attack 87 ms, decay 286 ms, sustain 0.65
+Pad Loop.wav     peaks at 3040 ms (peaksLate, not an attack), no decay, sustain 1.00
+```
+
+`reArticulates` is the other reason: a loop struck four times has four attacks
+and the file has none.
+
 ## Calibration
 
 `Brightness` uses the boundaries from
@@ -78,6 +98,11 @@ transfer is that this library measures flatness **per frame and takes the median
 reference takes one transform over the whole file — a different method gives different
 numbers on the same audio, and a threshold does not survive the crossing.
 
+The onset horizon — how far into a file a peak may sit and still be an onset —
+is a judgement with a number, like the bucket boundaries, and measured the same
+way: kick 10%, clap 10%, pluck 7%, snare 3%, all plainly onsets, against a pad
+loop at 54%, a lead loop at 25% and a sub-bass swell at 90%, none of which are.
+
 ## Measured
 
 **Pitch agrees with the filename on 58 of 60** note-labelled files from a commercial pack
@@ -85,7 +110,7 @@ numbers on the same audio, and a threshold does not survive the crossing.
 semitone or two under the labelled key — the loudest window of a bassline need not sit on
 the root.
 
-Three bugs were found by real audio that no synthetic signal produced:
+Four findings came from real audio that no synthetic signal produced:
 
 - **A 50 Hz pitch floor**, inherited, is above the fundamental of a sub bass. C1 is 32.7 Hz
   and D1 is 36.7, so a sub, a pluck and a lead all had correlation curves with no peak in
@@ -97,10 +122,12 @@ Three bugs were found by real audio that no synthetic signal produced:
 - **A raw autocorrelation is biased toward short lags**, because the overlap shrinks as the
   lag grows. On a 110 Hz sine, lag 29 outscored the true lag 401 on term count alone. Each
   lag is normalised by the energy of the spans it compares.
+- **A time-to-peak is not an attack**, which only showed once real loops went through it —
+  see the section above.
 
 ## Tested
 
-56 tests against signals whose answers are known before they are measured: a 440 Hz sine has
+61 tests against signals whose answers are known before they are measured: a 440 Hz sine has
 a centroid of 440 Hz, a flatness near zero and a pitch of A4 — by construction, not
 approximately. An exponential with a 100 ms time constant reaches −60 dB after 6.908 time
 constants, which is arithmetic.

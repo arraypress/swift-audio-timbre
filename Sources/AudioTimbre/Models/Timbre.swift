@@ -77,7 +77,18 @@ public struct Timbre: Codable, Hashable, Sendable {
     // MARK: - Envelope
 
     /// Time from the start of the file to its loudest point, in milliseconds.
-    public let attackMs: Double
+    ///
+    /// Always measured. On a one-shot this is the attack; on a loop it is wherever the
+    /// arrangement peaked, which is why ``attackMs`` is a separate, gated field rather
+    /// than this one wearing a better name.
+    public let timeToPeakMs: Double
+
+    /// ``timeToPeakMs`` when the signal rose to a single peak and was not struck again.
+    /// `nil` otherwise — see ``attackRejection``.
+    public let attackMs: Double?
+
+    /// Why no attack was reported, or `nil` when one was.
+    public let attackRejection: AttackRejection?
 
     /// Time from the loudest point until the level falls 60 dB below it, in milliseconds.
     ///
@@ -137,13 +148,11 @@ public struct Timbre: Codable, Hashable, Sendable {
             lines.append(String(format: "no pitch (%@, confidence %.2f)", why, pitchConfidence))
         }
 
-        if let decayMs {
-            lines.append(String(format: "attack %.0f ms, decay %.0f ms, sustain %.2f",
-                                attackMs, decayMs, sustainRatio))
-        } else {
-            lines.append(String(format: "attack %.0f ms, no decay to -60 dB, sustain %.2f",
-                                attackMs, sustainRatio))
-        }
+        let rise = attackMs.map { String(format: "attack %.0f ms", $0) }
+            ?? String(format: "peaks at %.0f ms (%@, not an attack)",
+                      timeToPeakMs, attackRejection?.rawValue ?? "unknown")
+        let fall = decayMs.map { String(format: "decay %.0f ms", $0) } ?? "no decay to -60 dB"
+        lines.append(String(format: "%@, %@, sustain %.2f", rise, fall, sustainRatio))
 
         lines.append(String(format: "peak %.1f dBFS, RMS %.1f dBFS", peakDbfs, rmsDbfs))
 

@@ -98,6 +98,32 @@ enum TestSignals {
         }
     }
 
+    /// A sustained chord: one sine per note, each with a couple of harmonics so it looks
+    /// like an instrument rather than a test tone.
+    ///
+    /// - Parameters:
+    ///   - root: MIDI note number of the root, 60 = middle C.
+    ///   - intervals: semitones above the root.
+    static func chord(root: Int, intervals: [Int], seconds: Double = 2,
+                      sampleRate: Double = sampleRate) -> [Float] {
+        let count = Int(seconds * sampleRate)
+        var out = [Float](repeating: 0, count: count)
+        for interval in intervals {
+            let hz = 440.0 * pow(2.0, (Double(root + interval) - 69.0) / 12.0)
+            // 1/n harmonics, as a real voice has — and the reason a chroma of a real chord
+            // is never as clean as its template.
+            for harmonic in 1...3 {
+                let frequency = hz * Double(harmonic)
+                guard frequency < sampleRate / 2 else { continue }
+                let step = 2 * Double.pi * frequency / sampleRate
+                let amplitude = Float(1.0 / Double(harmonic)) / Float(intervals.count)
+                for i in 0..<count { out[i] += amplitude * Float(sin(step * Double(i))) }
+            }
+        }
+        let peak = out.map(abs).max() ?? 1
+        return peak > 0 ? out.map { $0 / peak } : out
+    }
+
     /// How long a decay of this time constant takes to fall 60 dB, in milliseconds.
     static func decayMs(tau: Double) -> Double { 60 * log(10.0) / 20 * tau * 1000 }
 

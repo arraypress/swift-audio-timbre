@@ -71,6 +71,8 @@ public enum TimbreAnalyzer {
             brightness: Brightness.of(centroidHz: spectral.centroidHz),
             spectralCentroidHz: spectral.centroidHz,
             spectralCentroidRangeHz: spectral.centroidRangeHz,
+            spectralBandwidthHz: spectral.bandwidthHz,
+            spectralRolloffHz: spectral.rolloffHz,
             texture: Texture.of(flatness: spectral.flatness),
             spectralFlatness: spectral.flatness,
             pitch: pitch.pitch,

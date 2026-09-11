@@ -53,6 +53,20 @@ public struct Timbre: Codable, Hashable, Sendable {
     /// ``spectralCentroidHz`` describes the whole file fairly.
     public let spectralCentroidRangeHz: ClosedRange<Double>
 
+    /// How far the energy spreads either side of the centroid, in Hz.
+    ///
+    /// A magnitude-weighted standard deviation of frequency. Centroid says where the
+    /// energy sits; this says how tightly it is gathered there.
+    public let spectralBandwidthHz: Double
+
+    /// The frequency below which 85% of the magnitude lies, in Hz.
+    ///
+    /// Robust to a noise floor in a way ``spectralCentroidHz`` is not: measured on a
+    /// 2 kHz tone, hiss rising from 0.001 to 0.010 left the rolloff at 2,024 Hz while the
+    /// centroid climbed to 3,093. Read centroid for brightness including the noise, this
+    /// for where the sound itself stops.
+    public let spectralRolloffHz: Double
+
     /// Tone-like or noise-like, as a word. Always read with ``spectralFlatness``.
     public let texture: Texture
 
@@ -132,11 +146,13 @@ public struct Timbre: Codable, Hashable, Sendable {
         lines.append(String(format: "%.2f s, %.3g kHz %@",
                             duration, sampleRate / 1000, channels == 1 ? "mono" : "stereo"))
 
-        lines.append(String(format: "%@ (centroid %.0f Hz, range %.0f-%.0f) - %@ (flatness %.3f)",
+        lines.append(String(format: "%@ (centroid %.0f Hz, range %.0f-%.0f, bandwidth %.0f, rolloff %.0f) - %@ (flatness %.3f)",
                             brightness.rawValue,
                             spectralCentroidHz,
                             spectralCentroidRangeHz.lowerBound,
                             spectralCentroidRangeHz.upperBound,
+                            spectralBandwidthHz,
+                            spectralRolloffHz,
                             texture.rawValue,
                             spectralFlatness))
 

@@ -123,3 +123,68 @@ final class SpectralTests: XCTestCase {
         XCTAssertEqual(SpectralFeatures.median([]), 0)
     }
 }
+
+// MARK: - Bandwidth and rolloff
+
+extension SpectralTests {
+
+    private func shape(_ samples: [Float]) -> SpectralFeatures.Shape {
+        SpectralFeatures.measure(samples, sampleRate: TestSignals.sampleRate)!
+    }
+
+    func testAPureToneHasAlmostNoBandwidth() {
+        // All the energy is at one frequency, so the spread about the centroid is only
+        // what the analysis window itself smears.
+        XCTAssertLessThan(shape(TestSignals.sine(hz: 1000, seconds: 1)).bandwidthHz, 150)
+    }
+
+    func testTwoTonesFarApartHaveAWideBandwidthAtTheSameCentroid() {
+        // The case a centroid cannot see: 500 Hz and 4500 Hz average to 2500, and so
+        // does a single 2500 Hz tone. Only bandwidth tells them apart.
+        let single = shape(TestSignals.sine(hz: 2500, seconds: 1))
+        let split = shape(zip(TestSignals.sine(hz: 500, seconds: 1),
+                              TestSignals.sine(hz: 4500, seconds: 1)).map { ($0 + $1) / 2 })
+
+        XCTAssertEqual(single.centroidHz, split.centroidHz, accuracy: 400,
+                       "the two land on a comparable centroid")
+        XCTAssertGreaterThan(split.bandwidthHz, single.bandwidthHz * 5)
+    }
+
+    func testRolloffSitsAboveTheToneAndBelowNyquist() {
+        let tone = shape(TestSignals.sine(hz: 1000, seconds: 1))
+        XCTAssertGreaterThanOrEqual(tone.rolloffHz, 900)
+        XCTAssertLessThan(tone.rolloffHz, TestSignals.sampleRate / 2)
+    }
+
+    func testRolloffIgnoresANoiseFloorThatDragsTheCentroid() {
+        // The measured relationship, and the reason rolloff earns its place — the
+        // opposite of what it looks like. A 2 kHz tone under rising hiss: rolloff holds
+        // at 2,024 Hz while the centroid climbs 2,000 → 3,093 and bandwidth 49 → 3,679.
+        // A centroid is pulled by any broadband content because a thousand high bins each
+        // contribute their frequency; a rolloff ignores a floor until it carries a real
+        // share of the magnitude.
+        let tone = TestSignals.sine(hz: 2000, seconds: 1)
+        let clean = shape(tone)
+
+        for amplitude in [Float(0.001), 0.003, 0.010] {
+            let hissy = zip(tone, TestSignals.whiteNoise(seconds: 1, amplitude: amplitude, seed: 3))
+                .map { $0 + $1 }
+            let dirty = shape(hissy)
+            XCTAssertEqual(dirty.rolloffHz, clean.rolloffHz, accuracy: 60,
+                           "rolloff should not move at hiss \(amplitude)")
+            XCTAssertGreaterThan(dirty.bandwidthHz, clean.bandwidthHz * 10,
+                                 "bandwidth is the sensitive one")
+        }
+
+        let loud = zip(tone, TestSignals.whiteNoise(seconds: 1, amplitude: 0.010, seed: 3))
+            .map { $0 + $1 }
+        XCTAssertGreaterThan(shape(loud).centroidHz, clean.centroidHz * 1.4,
+                             "the centroid does move, by half again")
+    }
+
+    func testWhiteNoiseRollsOffNearEightyFivePercentOfNyquist() {
+        // Uniform energy to Nyquist puts 85% of it below 0.85 × Nyquist.
+        let noise = shape(TestSignals.whiteNoise(seconds: 1))
+        XCTAssertEqual(noise.rolloffHz, TestSignals.sampleRate / 2 * 0.85, accuracy: 2000)
+    }
+}

@@ -13,6 +13,8 @@ let timbre = try TimbreAnalyzer.analyze(fileAt: url)
 
 timbre.brightness            // .warm
 timbre.spectralCentroidHz    // 1894.2
+timbre.spectralBandwidthHz   // 620.4   — how tightly the energy is gathered
+timbre.spectralRolloffHz     // 3180.0  — where it stops
 timbre.pitch?.name           // "C5"
 timbre.timeToPeakMs          // 8.0  — always measured
 timbre.attackMs              // 8.0  — nil when that time is not an onset
@@ -60,6 +62,43 @@ Where a word cannot be justified, there isn't one: `StereoImage` reports correla
 Side/Mid as numbers with no adjective attached, because no boundary set for stereo width
 was available to cite and inventing one would dress a guess as a measurement.
 
+## Pitch classes
+
+`HarmonicAnalyzer` folds the spectrum onto the twelve pitch classes. Separate from
+`TimbreAnalyzer` because it needs a 16,384-point frame where the timbre measurements
+need 2,048 — eight times the work, for an answer a drum-library sweep does not want.
+
+```swift
+let harmony = try HarmonicAnalyzer.analyze(fileAt: url)
+harmony.dominantPitchClasses   // ["C", "E", "G"]
+harmony.chroma.salience        // 41.2 — how far the top stands above the middle
+
+// Per bar, with boundaries from a beat tracker (muse --full reports them)
+let bars = try HarmonicAnalyzer.analyze(channels: ch, sampleRate: sr, segments: spans)
+```
+
+**There is no chord namer, and that is a decision taken after building one.** It had 108
+templates, cosine matching, and gates on salience and confidence. Measured against a
+commercial pack it **named nine of twenty kick drums as "F"** — a kick is one strong
+fundamental, and nothing in a sample library is more salient than that. Worse, the pitched
+one-shots it *did* name mostly carried a single pitch class: it was reading one note's
+harmonic series — a root, a fifth and a major third — as a major triad. It was not
+identifying chords, it was identifying fundamentals, which the pitch estimator already does
+and does better.
+
+Every threshold available over this feature was measured and none separate a kick from a
+chord:
+
+| | pitched one-shots | drum one-shots | pitched loops | drum loops |
+|---|---|---|---|---|
+| median salience | 5.94 | 1.75 | **2.09** | **1.82** |
+
+A pitched loop and a drum loop are the same shape. Entropy is worse — 0.02 for a clean A
+minor loop against 0.03 for a hi-hat. Recover the estimator with
+`git log --all -- Sources/AudioTimbre/Core/ChordEstimator.swift` if a future version brings
+beat-synchronous segmentation, bass-aware templates or a trained model; it does not need a
+better threshold.
+
 ## A time-to-peak is not always an attack
 
 Time to the loudest point is the attack on a one-shot and wherever the
@@ -78,6 +117,22 @@ Pad Loop.wav     peaks at 3040 ms (peaksLate, not an attack), no decay, sustain 
 
 `reArticulates` is the other reason: a loop struck four times has four attacks
 and the file has none.
+
+## Centroid, bandwidth and rolloff answer different questions
+
+Measured on a 2 kHz tone with white noise mixed under it:
+
+| hiss | centroid | rolloff | bandwidth |
+|---|---|---|---|
+| none | 2000 | 2024 | 49 |
+| 0.001 | 2122 | **2024** | 1280 |
+| 0.010 | 3093 | **2024** | 3679 |
+
+**Rolloff is the robust one**, which is the opposite of how it looks. It holds through a
+tenfold rise in noise while the centroid drifts 55%, because a centroid is pulled by every
+one of a thousand high bins and a rolloff ignores a floor until it carries a real share of
+the magnitude. Read centroid for brightness *including* the noise, rolloff for where the
+sound itself stops, bandwidth for how tightly the energy is gathered.
 
 ## Calibration
 
@@ -127,7 +182,7 @@ Four findings came from real audio that no synthetic signal produced:
 
 ## Tested
 
-61 tests against signals whose answers are known before they are measured: a 440 Hz sine has
+85 tests against signals whose answers are known before they are measured: a 440 Hz sine has
 a centroid of 440 Hz, a flatness near zero and a pitch of A4 — by construction, not
 approximately. An exponential with a 100 ms time constant reaches −60 dB after 6.908 time
 constants, which is arithmetic.

@@ -2,7 +2,7 @@
 //  Brightness.swift
 //  AudioTimbre
 //
-//  Created by David Sherlock on 2026.
+//  Created by David Sherlock on 9/11/26.
 //
 //  A word for where a sound's energy sits, bucketed from the spectral centroid.
 //

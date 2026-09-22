@@ -2,7 +2,7 @@
 //  HarmonicAnalyzer.swift
 //  AudioTimbre
 //
-//  Created by David Sherlock on 2026.
+//  Created by David Sherlock on 9/11/26.
 //
 //  The harmonic entry point: which of the twelve pitch classes are in this.
 //

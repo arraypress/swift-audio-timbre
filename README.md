@@ -197,6 +197,18 @@ kick proves nothing, a rate over thirty of them is a claim:
 AUDIOTIMBRE_SAMPLES=~/Samples/SomePack swift test
 ```
 
+## Waveform and level, streamed
+
+Two readers for files too long to decode whole (a 44.1 kHz stereo hour is 635 million floats):
+
+```swift
+let peaks = try await Waveform.peaks(fileAt: url, bins: 1024)   // 0…1 per bin, the loudest bin 1; 8 kHz mono, first 20 minutes
+let level = try await Level.measure(fileAt: url)                 // the file's own samples at its own rate
+level.peakDbfs        // -0.2, nil for silence
+level.clippedSamples  // samples AT the 16-bit rails
+level.clippedShare    // 0…1 of what was read
+```
+
 ## Requirements
 
 macOS 14+ / iOS 17+, Swift 6.2. Accelerate for the maths; AVFoundation only to decode a file

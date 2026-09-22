@@ -2,7 +2,7 @@
 //  StereoImage.swift
 //  AudioTimbre
 //
-//  Created by David Sherlock on 2026.
+//  Created by David Sherlock on 9/11/26.
 //
 //  How wide a stereo file is, as two numbers and no adjective.
 //

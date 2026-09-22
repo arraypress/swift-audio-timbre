@@ -2,7 +2,7 @@
 //  Spectrum.swift
 //  AudioTimbre
 //
-//  Created by David Sherlock on 2026.
+//  Created by David Sherlock on 9/11/26.
 //
 //  A real FFT over a windowed frame, and the two shape measurements taken from it.
 //

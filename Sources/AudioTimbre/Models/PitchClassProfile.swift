@@ -2,7 +2,7 @@
 //  PitchClassProfile.swift
 //  AudioTimbre
 //
-//  Created by David Sherlock on 2026.
+//  Created by David Sherlock on 9/11/26.
 //
 //  How much of each of the twelve pitch classes a piece of audio contains.
 //

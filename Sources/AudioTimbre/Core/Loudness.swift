@@ -2,7 +2,7 @@
 //  Loudness.swift
 //  AudioTimbre
 //
-//  Created by David Sherlock on 2026.
+//  Created by David Sherlock on 9/11/26.
 //
 //  Absolute level, in dB relative to full scale.
 //

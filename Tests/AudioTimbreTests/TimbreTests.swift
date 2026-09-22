@@ -2,7 +2,7 @@
 //  TimbreTests.swift
 //  AudioTimbreTests
 //
-//  Created by David Sherlock on 2026.
+//  Created by David Sherlock on 9/11/26.
 //
 //  The whole analysis end to end, and the contracts a caller depends on.
 //

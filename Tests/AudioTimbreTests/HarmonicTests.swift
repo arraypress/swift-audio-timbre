@@ -2,7 +2,7 @@
 //  HarmonicTests.swift
 //  AudioTimbreTests
 //
-//  Created by David Sherlock on 2026.
+//  Created by David Sherlock on 9/11/26.
 //
 //  Chroma and chord naming, against chords built from known notes.
 //

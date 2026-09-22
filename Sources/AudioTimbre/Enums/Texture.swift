@@ -2,7 +2,7 @@
 //  Texture.swift
 //  AudioTimbre
 //
-//  Created by David Sherlock on 2026.
+//  Created by David Sherlock on 9/11/26.
 //
 //  A word for how tone-like or noise-like a sound is, bucketed from spectral flatness.
 //

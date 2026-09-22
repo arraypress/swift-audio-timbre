@@ -2,7 +2,7 @@
 //  AttackRejection.swift
 //  AudioTimbre
 //
-//  Created by David Sherlock on 2026.
+//  Created by David Sherlock on 9/11/26.
 //
 //  Why a time-to-peak is not an attack.
 //

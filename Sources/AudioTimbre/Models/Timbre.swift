@@ -2,7 +2,7 @@
 //  Timbre.swift
 //  AudioTimbre
 //
-//  Created by David Sherlock on 2026.
+//  Created by David Sherlock on 9/11/26.
 //
 //  Everything measured about one piece of audio, and the sentence that reads it out.
 //

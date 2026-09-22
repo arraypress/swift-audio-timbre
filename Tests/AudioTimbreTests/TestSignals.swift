@@ -2,7 +2,7 @@
 //  TestSignals.swift
 //  AudioTimbreTests
 //
-//  Created by David Sherlock on 2026.
+//  Created by David Sherlock on 9/11/26.
 //
 //  Signals whose answers are known before they are measured.
 //

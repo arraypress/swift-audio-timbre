@@ -2,7 +2,7 @@
 //  StereoAnalysis.swift
 //  AudioTimbre
 //
-//  Created by David Sherlock on 2026.
+//  Created by David Sherlock on 9/11/26.
 //
 //  The relationship between two channels: how alike they are, and how much is not shared.
 //

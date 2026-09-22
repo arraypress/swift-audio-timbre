@@ -2,7 +2,7 @@
 //  EnvelopeTests.swift
 //  AudioTimbreTests
 //
-//  Created by David Sherlock on 2026.
+//  Created by David Sherlock on 9/11/26.
 //
 //  Attack and decay, against a signal whose envelope is known in closed form.
 //

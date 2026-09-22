@@ -14,7 +14,7 @@ let package = Package(
         .library(name: "AudioTimbre", targets: ["AudioTimbre"]),
     ],
     targets: [
-        .target(name: "AudioTimbre"),
+        .target(name: "AudioTimbre", swiftSettings: [.swiftLanguageMode(.v6)]),
         .testTarget(name: "AudioTimbreTests", dependencies: ["AudioTimbre"]),
     ]
 )

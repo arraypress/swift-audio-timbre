@@ -2,7 +2,7 @@
 //  SpectralFeatures.swift
 //  AudioTimbre
 //
-//  Created by David Sherlock on 2026.
+//  Created by David Sherlock on 9/11/26.
 //
 //  Where the energy sits (centroid) and how tone-like it is (flatness), frame by frame.
 //

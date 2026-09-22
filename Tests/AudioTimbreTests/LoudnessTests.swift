@@ -2,7 +2,7 @@
 //  LoudnessTests.swift
 //  AudioTimbreTests
 //
-//  Created by David Sherlock on 2026.
+//  Created by David Sherlock on 9/11/26.
 //
 //  Level, against values that can be worked out on paper.
 //

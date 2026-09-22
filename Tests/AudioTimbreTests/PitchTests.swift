@@ -2,7 +2,7 @@
 //  PitchTests.swift
 //  AudioTimbreTests
 //
-//  Created by David Sherlock on 2026.
+//  Created by David Sherlock on 9/11/26.
 //
 //  The estimator, and the two gates that are the only reason to trust it.
 //

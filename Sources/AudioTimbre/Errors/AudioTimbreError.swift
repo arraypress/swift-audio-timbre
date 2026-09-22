@@ -2,7 +2,7 @@
 //  AudioTimbreError.swift
 //  AudioTimbre
 //
-//  Created by David Sherlock on 2026.
+//  Created by David Sherlock on 9/11/26.
 //
 //  Every way an analysis can refuse, each naming what it saw.
 //

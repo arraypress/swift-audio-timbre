@@ -2,7 +2,7 @@
 //  PitchEstimator.swift
 //  AudioTimbre
 //
-//  Created by David Sherlock on 2026.
+//  Created by David Sherlock on 9/11/26.
 //
 //  An autocorrelation fundamental, and the two gates that stop it lying.
 //

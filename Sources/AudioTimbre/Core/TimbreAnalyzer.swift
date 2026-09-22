@@ -2,7 +2,7 @@
 //  TimbreAnalyzer.swift
 //  AudioTimbre
 //
-//  Created by David Sherlock on 2026.
+//  Created by David Sherlock on 9/11/26.
 //
 //  The entry point: audio in, measured facts out.
 //

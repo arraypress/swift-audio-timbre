@@ -2,7 +2,7 @@
 //  Envelope.swift
 //  AudioTimbre
 //
-//  Created by David Sherlock on 2026.
+//  Created by David Sherlock on 9/11/26.
 //
 //  How a sound moves over time: how fast it arrives, how long it takes to leave.
 //

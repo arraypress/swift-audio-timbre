@@ -2,7 +2,7 @@
 //  AudioDecoder.swift
 //  AudioTimbre
 //
-//  Created by David Sherlock on 2026.
+//  Created by David Sherlock on 9/11/26.
 //
 //  A file to float samples, one array per channel. The only part of this library that
 //  touches AVFoundation.
